@@ -25,9 +25,9 @@ public class Driver : MonoBehaviour
         transform.Translate(0, moveAmount, 0);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collison)
     {
-        if (other.gameObject.CompareTag("Boost"))
+        if (collison.gameObject.CompareTag("Boost"))
         {
             moveSpeed = boostSpeed;
             Debug.Log("Boooost!!!");
