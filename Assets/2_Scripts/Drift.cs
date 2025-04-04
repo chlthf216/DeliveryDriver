@@ -6,6 +6,10 @@ public class Drift : MonoBehaviour
     [SerializeField] float steering = 3f;
     [SerializeField] float maxSpeed = 10f;
     [SerializeField] float driftFactor = 0.95f; //ÀÌ °ªÀÌ ³·À»¼ö·Ï ´õ ¹Ì²ô·¯Áü
+
+    [SerializeField] ParticleSystem smokeleft;
+    [SerializeField] ParticleSystem smokeright;
+
     Rigidbody2D rb;
 
     private void Start()
@@ -28,6 +32,23 @@ public class Drift : MonoBehaviour
         Vector2 sideVelocity = transform.right * Vector2.Dot(rb.linearVelocity, transform.right);
 
         rb.linearVelocity = forwardVelocity + sideVelocity * driftFactor;
+
+    }
+
+    private void Update()
+    {
+        float sidewayVelocity = Vector2.Dot(rb.linearVelocity, transform.right);
+        bool isDrifting = rb.linearVelocity.magnitude > 2f && Mathf.Abs(sidewayVelocity) > 1f;
+        if (isDrifting)
+        {
+            if (!smokeleft.isPlaying) smokeleft.Play();
+            if (!smokeright.isPlaying) smokeright.Play();
+        }
+        else
+        {
+            if (smokeleft.isPlaying) smokeleft.Stop();
+            if (smokeright.isPlaying) smokeright.Stop();
+        }
 
     }
 }
