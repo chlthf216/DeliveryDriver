@@ -7,6 +7,8 @@ TagManager:
   - Chicken
   - Customer
   - Boost
+  - Portal
+  - Road
   layers:
   - Default
   - TransparentFX

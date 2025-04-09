@@ -4,13 +4,17 @@ public class Delivery : MonoBehaviour
 {
     bool hasChicken = false;
     [SerializeField] float ChickenDelay = 0.5f;
-    [SerializeField] Color noChickenColor = new Color(1, 1, 1, 1);
-    [SerializeField] Color hasChickenColor = new Color(1, 1, 1, 1);
+
+    [Header("Sprites")]
+    [SerializeField] Sprite noChickenSprite;
+    [SerializeField] Sprite hasChickenSprite;
+
     SpriteRenderer spriteRenderer;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = noChickenSprite;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -23,16 +27,20 @@ public class Delivery : MonoBehaviour
         {
             Destroy(collision.gameObject, ChickenDelay);
             Debug.Log("Ä¡Å² ÇÈ¾÷µÊ");
-            spriteRenderer.color = hasChickenColor;
+            spriteRenderer.sprite = hasChickenSprite;
             hasChicken = true;
         }
-        
+
 
         if (collision.gameObject.CompareTag("Customer") && hasChicken)
         {
             Debug.Log("Ä¡Å² ¹è´ÞµÊ");
-            spriteRenderer.color = noChickenColor;
+            Destroy(collision.gameObject, ChickenDelay);
+            spriteRenderer.sprite = noChickenSprite;
             hasChicken = false;
+
+            ScoreManager.Instance.AddScore(200);
+            GameController.Instance.CustomerServed();
         }
 
     }

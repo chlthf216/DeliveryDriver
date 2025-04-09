@@ -1,4 +1,7 @@
+using UnityEditor.Rendering.LookDev;
+using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public class Drift : MonoBehaviour
 {
@@ -8,12 +11,14 @@ public class Drift : MonoBehaviour
     [SerializeField] float driftFactor = 0.95f; //ÀÌ °ªÀÌ ³·À»¼ö·Ï ´õ ¹Ì²ô·¯Áü
 
     [SerializeField] float slowAccelerationRatio = 0.5f;
-    [SerializeField] float boostAccelerationRaio = 1.5f;
+    [SerializeField] float boostAccelerationRatio = 1.5f;
 
     [SerializeField] ParticleSystem smokeleft;
     [SerializeField] ParticleSystem smokeright;
     [SerializeField] TrailRenderer leftTrail;
     [SerializeField] TrailRenderer rightTrail;
+
+    [SerializeField] TMP_Text speedText;
 
     Rigidbody2D rb;
     AudioSource audioSource;
@@ -29,7 +34,7 @@ public class Drift : MonoBehaviour
 
         defaultAcceleration = acceleration;
         slowAcceleration = acceleration * slowAccelerationRatio;
-        boostAcceleration = acceleration * boostAccelerationRaio;
+        boostAcceleration = acceleration * boostAccelerationRatio;
     }
 
     void FixedUpdate()
@@ -52,6 +57,9 @@ public class Drift : MonoBehaviour
 
     private void Update()
     {
+        float speed = rb.linearVelocity.magnitude;
+        speedText.text = $"Speed: {speed:F1}";
+
         float sidewayVelocity = Vector2.Dot(rb.linearVelocity, transform.right);
         bool isDrifting = rb.linearVelocity.magnitude > 2f && Mathf.Abs(sidewayVelocity) > 1f;
         if (isDrifting)
@@ -66,6 +74,8 @@ public class Drift : MonoBehaviour
             if (smokeleft.isPlaying) smokeleft.Stop();
             if (smokeright.isPlaying) smokeright.Stop();
         }
+        if (isDrifting && !audioSource.isPlaying) audioSource.Play();
+        else if (!isDrifting && audioSource.isPlaying) audioSource.Stop();
 
         leftTrail.emitting = isDrifting;
         rightTrail.emitting = isDrifting;
@@ -91,7 +101,7 @@ public class Drift : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         acceleration = slowAcceleration;
-
+        CameraShake.Instance.Shake(0.2f, 0.2f);
         Invoke(nameof(ResetAcceleration), 3f);
     }
 }
