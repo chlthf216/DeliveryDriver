@@ -3,21 +3,20 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
-    public int score = 0;
+    private int currentScore = 0;
 
-    private void Awake()
+    void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        Instance = this;
     }
 
     public void AddScore(int amount)
     {
-        score += amount;
+        currentScore += amount;
     }
 
     public int GetScore()
     {
-        return score;
+        return currentScore;
     }
 }

@@ -21,19 +21,26 @@ public class GameController : MonoBehaviour
     public void CustomerServed()
     {
         servedCustomers++;
+        Debug.Log($"[GameController] 배달된 손님 수: {servedCustomers}");
+
         if (servedCustomers >= totalCustomers)
         {
-            Timer.Instance.ForceEnd(); // 타이머 강제 종료
+            Debug.Log("[GameController] 모든 고객 배달 완료. ForceEnd 호출");
+            Timer.Instance.ForceEnd();
         }
     }
 
     public void GameOver(float timeRemaining)
     {
-        int deliveryScore = ScoreManager.Instance.GetScore();
-        int timeBonus = Mathf.FloorToInt(timeRemaining) * 10;
-        int totalScore = deliveryScore + timeBonus;
+        Debug.Log($"[GameController.GameOver] 호출됨. 남은 시간: {timeRemaining}");
 
-        gameOverPanel.SetActive(true);
-        finalScoreText.text = $"배달 점수: {deliveryScore}\n보너스: {timeBonus}\n총점: {totalScore}";
+        if (GameOverUIManager.Instance != null)
+        {
+            GameOverUIManager.Instance.ShowGameOver(timeRemaining);
+        }
+        else
+        {
+            Debug.LogError("GameOverUIManager.Instance is NULL!");
+        }
     }
 }

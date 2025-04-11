@@ -5,34 +5,21 @@ public class Timer : MonoBehaviour
 {
     public float timeLimit = 30f; // 제한 시간 (초 단위)
     private float timeRemaining;
-    public Text timerText; // UI 텍스트에 시간 표시
+    public Text timerText;
 
     private bool isRunning = true;
-
     public static Timer Instance;
-
-   
 
     void Awake()
     {
         Instance = this;
     }
 
-    // 타이머 강제 종료 함수
     public void ForceEnd()
     {
-        timeRemaining = 0;
         isRunning = false;
-        GameOver();
-    }
-
-    public GameOverUIManager gameOverUI;
-    public int currentScore = 0; // 배달마다 200점씩 올릴 때 여기 증가
-
-    void GameOver()
-    {
-        Debug.Log("시간 초과! 게임 오버!");
-        gameOverUI.ShowGameOver(currentScore);
+        Debug.Log($"[ForceEnd] timeRemaining: {timeRemaining}");
+        GameController.Instance.GameOver(timeRemaining);
     }
 
     void Start()
@@ -53,10 +40,11 @@ public class Timer : MonoBehaviour
             {
                 timeRemaining = 0;
                 isRunning = false;
-                GameOver();
+                ForceEnd(); // << 여기로 교체!
             }
         }
     }
+
     void UpdateTimerDisplay(float time)
     {
         time = Mathf.Clamp(time, 0, Mathf.Infinity);
@@ -73,6 +61,5 @@ public class Timer : MonoBehaviour
             timerText.color = Color.white;
         }
     }
-
 }
 

@@ -1,7 +1,5 @@
-using UnityEditor.Rendering.LookDev;
-using UnityEngine.UI;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class Drift : MonoBehaviour
 {
@@ -15,10 +13,19 @@ public class Drift : MonoBehaviour
 
     [SerializeField] ParticleSystem smokeleft;
     [SerializeField] ParticleSystem smokeright;
+
+    [SerializeField] float maxDriftIntensity = 5f; // 드리프트 세기 최대값
+    [SerializeField] float maxEmissionRate = 50f;  // 최대 연기량
+
     [SerializeField] TrailRenderer leftTrail;
     [SerializeField] TrailRenderer rightTrail;
 
     [SerializeField] TMP_Text speedText;
+
+    [SerializeField] ParticleSystem speedLines;
+    [SerializeField] float speedLineThreshold = 5f;
+
+    [SerializeField] float BoostDelay = 0.5f;
 
     Rigidbody2D rb;
     AudioSource audioSource;
@@ -26,6 +33,8 @@ public class Drift : MonoBehaviour
     float defaultAcceleration;
     float slowAcceleration;
     float boostAcceleration;
+    private ParticleSystem.EmissionModule leftEmission;
+    private ParticleSystem.EmissionModule rightEmission;
 
     private void Start()
     {
@@ -35,6 +44,9 @@ public class Drift : MonoBehaviour
         defaultAcceleration = acceleration;
         slowAcceleration = acceleration * slowAccelerationRatio;
         boostAcceleration = acceleration * boostAccelerationRatio;
+
+        leftEmission = smokeleft.emission;
+        rightEmission = smokeright.emission;
     }
 
     void FixedUpdate()
@@ -60,8 +72,24 @@ public class Drift : MonoBehaviour
         float speed = rb.linearVelocity.magnitude;
         speedText.text = $"Speed: {speed:F1}";
 
+        if (speed >= speedLineThreshold)
+        {
+            if (!speedLines.isPlaying) speedLines.Play();
+        }
+        else
+        {
+            if (speedLines.isPlaying) speedLines.Stop();
+        }
+
         float sidewayVelocity = Vector2.Dot(rb.linearVelocity, transform.right);
         bool isDrifting = rb.linearVelocity.magnitude > 2f && Mathf.Abs(sidewayVelocity) > 1f;
+
+        float driftIntensity = Mathf.Clamp01(Mathf.Abs(sidewayVelocity) / maxDriftIntensity);
+        float emissionRate = driftIntensity * maxEmissionRate;
+
+        leftEmission.rateOverTime = emissionRate;
+        rightEmission.rateOverTime = emissionRate;
+
         if (isDrifting)
         {
             if (!audioSource.isPlaying) audioSource.Play();
@@ -88,6 +116,7 @@ public class Drift : MonoBehaviour
         {
             acceleration = boostAcceleration;
             Debug.Log("Boooost!!!");
+            Destroy(collison.gameObject, BoostDelay);
 
             Invoke(nameof(ResetAcceleration), 5f);
         }

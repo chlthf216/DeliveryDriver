@@ -9,6 +9,9 @@ public class Delivery : MonoBehaviour
     [SerializeField] Sprite noChickenSprite;
     [SerializeField] Sprite hasChickenSprite;
 
+    public GameObject chickenPrefab; // 치킨 프리팹
+    public Transform chickenSpawnPoint; // 치킨이 다시 생성될 위치
+
     SpriteRenderer spriteRenderer;
 
     private void Start()
@@ -39,6 +42,7 @@ public class Delivery : MonoBehaviour
             spriteRenderer.sprite = noChickenSprite;
             hasChicken = false;
 
+            Instantiate(chickenPrefab, chickenSpawnPoint.position, Quaternion.identity);
             ScoreManager.Instance.AddScore(200);
             GameController.Instance.CustomerServed();
         }
