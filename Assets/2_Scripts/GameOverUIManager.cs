@@ -18,7 +18,7 @@ public class GameOverUIManager : MonoBehaviour
     {
         gameOverCanvas.SetActive(true);
         int deliveryScore = ScoreManager.Instance.GetScore();
-        int timeBonus = Mathf.FloorToInt(timeRemaining) * 10;
+        int timeBonus = Mathf.FloorToInt(timeRemaining) * 1;
         int totalScore = deliveryScore + timeBonus;
         scoreText.text = $"Delivery Score: {deliveryScore}\nBonus: {timeBonus}\nFinal Score: {totalScore}";
         //scoreText.text = "Final Score: " + score + "Jum";
